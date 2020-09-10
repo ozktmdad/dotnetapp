@@ -1,8 +1,5 @@
-# ASP.NET Core
-# Build and test ASP.NET Core projects targeting .NET Core.
-# Add steps that run tests, create a NuGet package, deploy, and more:
-# https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
-
+---
+# Detect when to run build automatically
 trigger:
 - master
 
@@ -13,5 +10,40 @@ variables:
   buildConfiguration: 'Release'
 
 steps:
-- script: dotnet build --configuration $(buildConfiguration)
-  displayName: 'dotnet build $(buildConfiguration)'
+#Install 3.1.x .net
+- task: UseDotNet@2
+  displayName: Install .net
+  inputs:
+    version: '3.1.x'
+    packageType: runtime
+
+# Test the application
+- task: DotNetCoreCLI@2
+  displayName: Test
+  inputs:
+    command: test
+    projects: '**/*Tests/*.csproj'
+    arguments: '--configuration $(buildConfiguration)'
+
+# # Build the application
+# - task: DotNetCoreCLI@2
+#   displayName: Build
+#   inputs:
+#     command: build
+#     projects: '**/*.csproj'
+#     arguments: '--configuration $(buildConfiguration)'
+
+# Publish artifacts to Azure Pipelines
+- task: DotNetCoreCLI@2
+  displayName: Publish
+  inputs:
+    command: publish
+    publishWebProjects: True
+    arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)'
+    zipAfterPublish: True
+
+- task: PublishBuildArtifacts@1
+  displayName: Upload Artifact
+  inputs:
+    pathtoPublish: '$(Build.ArtifactStagingDirectory)' 
+    artifactName: 'myWebsiteName'
