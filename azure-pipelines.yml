@@ -12,6 +12,7 @@ variables:
 steps:
 #Install 3.1.x .net
 - task: UseDotNet@2
+  DisplayName: Install .net
   inputs:
     version: '3.1.x'
     packageType: runtime
@@ -26,6 +27,7 @@ steps:
 
 # Test the application
 - task: DotNetCoreCLI@2
+  displayName: Test
   inputs:
     command: test
     projects: '**/*Tests/*.csproj'
