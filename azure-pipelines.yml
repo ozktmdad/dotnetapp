@@ -35,14 +35,15 @@ steps:
 
 # Publish artifacts to Azure Pipelines
 - task: DotNetCoreCLI@2
+  displayName: Publish
   inputs:
-    displayName: Publish
     command: publish
     publishWebProjects: True
     arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)'
     zipAfterPublish: True
 
 - task: PublishBuildArtifacts@1
+  displayName: Upload Artifact
   inputs:
     pathtoPublish: '$(Build.ArtifactStagingDirectory)' 
     artifactName: 'myWebsiteName'
